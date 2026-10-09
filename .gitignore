@@ -1,0 +1,26 @@
+# Original game data exported from DW3CE_RE — copyrighted, do not publish.
+# Regenerate locally: see tools/game_data/README.md
+tools/game_data/*
+!tools/game_data/README.md
+
+# Build outputs
+source/*/datatable/build/
+source/*/dll/*.dll
+*.obj
+*.lib
+*.exp
+*.pdb
+
+# Python
+__pycache__/
+*.pyc
+
+# Runtime log written next to version.dll (old name kept for older installs)
+dw3ce_re_top_tier_drop.log
+dw3ce_patch.log
+
+# OS / editor
+Thumbs.db
+desktop.ini
+.DS_Store
+.vscode/

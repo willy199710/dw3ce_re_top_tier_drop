@@ -1,0 +1,23 @@
+{
+ "RowStruct": "SkillNumRandomTable_TableRow",
+ "Rows": {
+  "SkillRandomType_Weapon": {
+   "SkillRandBase": [
+    100,
+    100,
+    100,
+    100,
+    100
+   ]
+  },
+  "SkillRandomType_GuardWeapon": {
+   "SkillRandBase": [
+    100,
+    100,
+    100,
+    100,
+    100
+   ]
+  }
+ }
+}
