@@ -24,6 +24,8 @@
 |---|---|---|
 | 數值 | 依關卡難度落在不同級距，級距內再隨機 | **固定為原版上限**（道具最高級距 4、級距內最大值） |
 
+一般技能道具和護衛兵技能道具都適用。
+
 ### 擊倒敵人掉落的道具（肉包、箭矢、攻擊力＋、防禦力＋）
 | 項目 | 原版 | 套用後 |
 |---|---|---|
@@ -67,15 +69,26 @@ mods\DW3CE_TopTierDrops\DW3CE_RE   →   ...\steamapps\common\DW3CE_RE\DW3CE_RE
 **5 個檔案必須一起使用。** 只放資料表的話，武器技能數值反而會變成最低。
 
 ### 確認是否生效
-啟動遊戲後，打開 `DW3CE_RE\Binaries\Win64\dw3ce_re_top_tier_drop.log`，正常內容應有一行 `[Element] = 3 (...)`、7 行 `applied`，最後一行 `done`。
+啟動遊戲後，打開 `DW3CE_RE\Binaries\Win64\dw3ce_re_top_tier_drop.log`，正常內容應有一行 `[Element] = 3 (...)`、8 行 `applied`，最後一行 `done`。
 
 ### 從舊版更新
 舊版的設定檔叫 `dw3ce_patch.ini`。新版的 `version.dll` 找不到 `dw3ce_re_top_tier_drop.ini` 時，仍會讀取舊檔名（log 會提醒改名），
 但建議直接改用新版的 `dw3ce_re_top_tier_drop.ini`，並刪除舊的 `dw3ce_patch.ini`、`dw3ce_patch.log`。
 
+### 使用 Ultimate ASI Loader（與其他使用 `version.dll` 的模組共存）
+遊戲只會載入一個 `version.dll`，所以本模組的 `version.dll` 無法和其他同樣使用 `version.dll` 的模組同時安裝。
+這時請改用 ASI 版，交給 [Ultimate ASI Loader](https://github.com/ThirteenAG/Ultimate-ASI-Loader) 載入：
+
+1. 在 `DW3CE_RE\Binaries\Win64\` 安裝 Ultimate ASI Loader（x64），檔名用 `version.dll`；如果其他模組用的本來就是 Ultimate ASI Loader，沿用即可。
+2. 把 **`mods\DW3CE_TopTierDrops_ASI\`** 裡的 `DW3CE_RE` 資料夾複製到遊戲根目錄，合併覆蓋。
+   內容是同樣的 mod 包、`dw3ce_re_top_tier_drop.asi`（跟 `version.dll` 是同一個檔案，只是改了副檔名），以及 `dw3ce_re_top_tier_drop.ini`，**不含** `version.dll`。
+3. `dw3ce_re_top_tier_drop.ini` 要放在 `.asi` 旁邊。log 也會寫在同一個位置，第一行會是 `loaded as ...\dw3ce_re_top_tier_drop.asi`。
+
+不要把本模組的 `version.dll` 和 `.asi` 同時安裝，擇一即可。
+
 ## 移除
 
-刪除上表的 5 個檔案（以及執行後產生的 `dw3ce_re_top_tier_drop.log`）即可。
+刪除上表的 5 個檔案（以及執行後產生的 `dw3ce_re_top_tier_drop.log`）即可。使用 ASI 版的話，刪的是 `dw3ce_re_top_tier_drop.asi` 而不是 `version.dll`。
 （Steam 的「驗證遊戲檔案完整性」不會刪除多出來的 mod 檔案，要手動刪。）
 
 ## 設定（dw3ce_re_top_tier_drop.ini）
@@ -98,6 +111,7 @@ mods\DW3CE_TopTierDrops\DW3CE_RE   →   ...\steamapps\common\DW3CE_RE\DW3CE_RE
 |---|---|
 | `MaxSkillRoll` | 武器技能與場上道具的數值固定取最大值 |
 | `MaxGuardSkillRoll` | 護衛兵武器的技能數值固定取最大值 |
+| `MaxGuardItemRoll` | 場上掉落的護衛兵技能道具，數值固定取級距內最大值 |
 | `SkillTierFix` | **必要，請勿關閉**。關閉會讓武器技能數值變成最低級距 |
 | `GuardTierFix` | **必要，請勿關閉**。關閉會讓護衛兵武器技能數值變成最低級距 |
 | `ComboUpgradeAlways` | 擊倒敵人掉落的道具一律升一級尺寸，不看連擊數（關閉則恢復原版的連擊條件） |
@@ -112,11 +126,12 @@ mods\DW3CE_TopTierDrops\DW3CE_RE   →   ...\steamapps\common\DW3CE_RE\DW3CE_RE
 ## 資料夾說明
 
 ```
-DE3MOD\
+dw3ce_re_top_tier_drop\
 ├─ README.md                 英文版說明（GitHub 首頁）
 ├─ README.zh-TW.md           本檔：mod 功能與使用說明
 ├─ mods\
-│  └─ DW3CE_TopTierDrops\        成品（照遊戲目錄結構擺放）
+│  ├─ DW3CE_TopTierDrops\        成品（照遊戲目錄結構擺放）
+│  └─ DW3CE_TopTierDrops_ASI\    同上，但 DLL 改為給 Ultimate ASI Loader 載入的 .asi
 ├─ source\
 │  └─ DW3CE_TopTierDrops\        原始碼、建置腳本、修改紀錄、開發歷程與驗證過程
 └─ tools\                    開發用工具（DataTable 解析工具、retoc、原版資料匯出）
@@ -129,7 +144,8 @@ DE3MOD\
 | `zDW3TopDrops_P.pak` | `75e7144577253917f6da7312ef5e585b12fb728226a22b0938323751a6b555cd` |
 | `zDW3TopDrops_P.utoc` | `a78a6f7e50afaf6983a3db5b441ef9afbb19e0060d51d92846b9b6d2388404d2` |
 | `zDW3TopDrops_P.ucas` | `b2f2967c3fc01102108ab3ce035bbf41c7f9a817f7f7ec7074e8e6938bfc15f7` |
-| `version.dll` | `3a95ca9ee0f473cfddd883a212cd276b929e9af694633215e1724ac15d1c25b1` |
+| `version.dll` | `f2bc13d72ab2fbf76566d459ea079c3cff116a6f54f24a3e9c968995bd486e94` |
+| `dw3ce_re_top_tier_drop.asi`（ASI 版） | `f2bc13d72ab2fbf76566d459ea079c3cff116a6f54f24a3e9c968995bd486e94`（與 version.dll 相同） |
 | 對應的遊戲執行檔 `DW3CE_RE-Win64-Shipping.exe` 1.0.2.0 | `ca1a65a53242a7cf42493bd2006b8c555d87597387468e4b7a07c52d4eefe92e` |
 
 ## 授權

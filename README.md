@@ -27,6 +27,8 @@ Every weapon and skill item that drops on the battlefield is rolled at the **hig
 |---|---|---|
 | Value | Tier depends on stage difficulty, then a random roll inside the tier | **Always the vanilla maximum** (item tier 4, top of the tier) |
 
+This applies to both normal skill items and bodyguard skill items.
+
 ### Items dropped by defeated enemies (meat buns, arrows, Attack Up, Defense Up)
 
 | | Vanilla | With this mod |
@@ -76,15 +78,26 @@ This only **adds** 5 files; no vanilla file is replaced:
 
 ### Checking that it works
 
-After launching the game, open `DW3CE_RE/Binaries/Win64/dw3ce_re_top_tier_drop.log`. It should contain an `[Element] = 3 (...)` line, 7 `applied` lines, and finally `done`.
+After launching the game, open `DW3CE_RE/Binaries/Win64/dw3ce_re_top_tier_drop.log`. It should contain an `[Element] = 3 (...)` line, 8 `applied` lines, and finally `done`.
 
 ### Updating from an older version
 Older releases named the settings file `dw3ce_patch.ini`. If `dw3ce_re_top_tier_drop.ini` is missing, the new `version.dll` still reads the old file
 (and notes it in the log), but it is recommended to switch to the new `dw3ce_re_top_tier_drop.ini` and delete the old `dw3ce_patch.ini` / `dw3ce_patch.log`.
 
+### Using Ultimate ASI Loader (compatibility with other `version.dll` mods)
+The game only loads one `version.dll`, so this mod's `version.dll` and another mod that also uses `version.dll` cannot both be installed.
+In that case, use the ASI package instead and let [Ultimate ASI Loader](https://github.com/ThirteenAG/Ultimate-ASI-Loader) load it:
+
+1. Install Ultimate ASI Loader (x64) as `version.dll` in `DW3CE_RE/Binaries/Win64/` — or keep the other mod's loader if it already is Ultimate ASI Loader.
+2. Copy the `DW3CE_RE` folder inside **`mods/DW3CE_TopTierDrops_ASI/`** into the game's root folder and merge. It contains the same data pak,
+   `dw3ce_re_top_tier_drop.asi` (the same binary as `version.dll`, just renamed) and `dw3ce_re_top_tier_drop.ini`, but **no** `version.dll`.
+3. Keep `dw3ce_re_top_tier_drop.ini` next to the `.asi`. The log is written next to it as well and starts with a `loaded as ...\dw3ce_re_top_tier_drop.asi` line.
+
+Do not install this mod's `version.dll` together with the `.asi`; one of them is enough.
+
 ## Uninstall
 
-Delete the 5 files above (and `dw3ce_re_top_tier_drop.log` if present).
+Delete the 5 files above (and `dw3ce_re_top_tier_drop.log` if present). With the ASI package, delete `dw3ce_re_top_tier_drop.asi` instead of `version.dll`.
 Steam's *Verify integrity of game files* does **not** remove extra mod files, so delete them manually.
 
 ## Configuration (`dw3ce_re_top_tier_drop.ini`)
@@ -107,6 +120,7 @@ Restart the game after editing.
 |---|---|
 | `MaxSkillRoll` | Weapon skills and field skill items always roll the top of their tier |
 | `MaxGuardSkillRoll` | Bodyguard weapon skills always roll their maximum |
+| `MaxGuardItemRoll` | Bodyguard skill items dropped on the field always roll the top of their tier |
 | `SkillTierFix` | **Required — do not disable.** Disabling it drops weapon skill values to the lowest tier |
 | `GuardTierFix` | **Required — do not disable.** Disabling it drops bodyguard weapon skill values to the lowest tier |
 | `ComboUpgradeAlways` | Items dropped by defeated enemies are always upgraded one size, ignoring the combo count (off = vanilla combo requirement) |
@@ -137,7 +151,7 @@ All 17 real exports are forwarded to `C:\Windows\System32\version.dll`. On load,
 | Key | What it changes |
 |---|---|
 | `Element` | The hard-coded element table `{FIRE, THUNDER, ZAN, WIND}` (`ZAN` = Slash) is filled with the chosen element (`0` leaves it untouched) |
-| `MaxSkillRoll` / `MaxGuardSkillRoll` | Removes the random roll inside a tier, always taking the maximum |
+| `MaxSkillRoll` / `MaxGuardSkillRoll` / `MaxGuardItemRoll` | Removes the random roll inside a tier, always taking the maximum (weapon skills & field items / bodyguard weapons / field bodyguard items) |
 | `SkillTierFix` / `GuardTierFix` | When no `SkillItemRandRank` entry matches, fall back to tier 3 instead of tier 0 |
 | `ComboUpgradeAlways` | In the enemy drop routine, removes the `combo / 8 > size` check so the one-size upgrade always happens |
 
@@ -164,7 +178,8 @@ and how each finding was verified — is in [`source/DW3CE_TopTierDrops/README.m
 ```
 ├─ README.md / README.zh-TW.md
 ├─ mods/
-│  └─ DW3CE_TopTierDrops/        Release files, laid out like the game folder
+│  ├─ DW3CE_TopTierDrops/        Release files, laid out like the game folder
+│  └─ DW3CE_TopTierDrops_ASI/    Same, with the DLL as an .asi plugin for Ultimate ASI Loader
 ├─ source/
 │  └─ DW3CE_TopTierDrops/
 │     ├─ datatable/              build_mod.py + edited JSON of the three tables
@@ -201,7 +216,8 @@ Requirements: Windows, Python 3.10+ (`numpy` and `capstone` only needed for `xre
    ```
    The game path defaults to `G:\SteamLibrary\steamapps\common\DW3CE_RE`; override it with the `DW3CE_GAME_DIR` environment variable.
    Builds are deterministic (`retoc --no-parallel`), and every written table is decoded again and compared before packing.
-3. **DLL**: run `source/DW3CE_TopTierDrops/dll/build.bat`, then copy `version.dll` into `mods/DW3CE_TopTierDrops/DW3CE_RE/Binaries/Win64/`.
+3. **DLL**: run `source/DW3CE_TopTierDrops/dll/build.bat`. It produces `version.dll` and an identical `dw3ce_re_top_tier_drop.asi`;
+   copy them into `mods/DW3CE_TopTierDrops/.../Binaries/Win64/` and `mods/DW3CE_TopTierDrops_ASI/.../Binaries/Win64/` respectively.
 
 ## Checksums (SHA-256)
 
@@ -210,7 +226,8 @@ Requirements: Windows, Python 3.10+ (`numpy` and `capstone` only needed for `xre
 | `zDW3TopDrops_P.pak` | `75e7144577253917f6da7312ef5e585b12fb728226a22b0938323751a6b555cd` |
 | `zDW3TopDrops_P.utoc` | `a78a6f7e50afaf6983a3db5b441ef9afbb19e0060d51d92846b9b6d2388404d2` |
 | `zDW3TopDrops_P.ucas` | `b2f2967c3fc01102108ab3ce035bbf41c7f9a817f7f7ec7074e8e6938bfc15f7` |
-| `version.dll` | `3a95ca9ee0f473cfddd883a212cd276b929e9af694633215e1724ac15d1c25b1` |
+| `version.dll` | `f2bc13d72ab2fbf76566d459ea079c3cff116a6f54f24a3e9c968995bd486e94` |
+| `dw3ce_re_top_tier_drop.asi` (ASI package) | `f2bc13d72ab2fbf76566d459ea079c3cff116a6f54f24a3e9c968995bd486e94` (same file) |
 | Target `DW3CE_RE-Win64-Shipping.exe` 1.0.2.0 | `ca1a65a53242a7cf42493bd2006b8c555d87597387468e4b7a07c52d4eefe92e` |
 
 ## License

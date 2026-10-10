@@ -6,6 +6,7 @@ tools/game_data/*
 # Build outputs
 source/*/datatable/build/
 source/*/dll/*.dll
+source/*/dll/*.asi
 *.obj
 *.lib
 *.exp

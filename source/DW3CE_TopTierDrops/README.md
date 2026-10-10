@@ -25,6 +25,8 @@ mod 的功能與安裝方式見 `E:\DE3MOD\README.zh-TW.md`。
    - [階段 10：整理與可重現建置](#階段-10整理與可重現建置)
    - [階段 11：可選屬性、連擊升級一律生效](#階段-11可選屬性連擊升級一律生效)
    - [階段 12：統一命名](#階段-12統一命名)
+   - [階段 13：護衛兵道具的數值](#階段-13護衛兵道具的數值)
+   - [階段 14：支援 Ultimate ASI Loader](#階段-14支援-ultimate-asi-loader)
 3. [走過的彎路](#走過的彎路)
 4. [附錄 A：最終修改清單](#附錄-a最終修改清單)
 5. [附錄 B：逆向分析筆記](#附錄-b逆向分析筆記)
@@ -269,6 +271,41 @@ UHT 產生的反射參數（`FPropertyParams`）會用指標指向這些名稱�
 - **相容處理**：找不到 `dw3ce_re_top_tier_drop.ini` 時，若有舊的 `dw3ce_patch.ini` 就改讀舊檔，並在 log 提醒改名；兩者都沒有就用預設值。
 - **驗證**：用測試程式跑 4 種情況（只有新檔、只有舊檔、兩者都有、都沒有），確認讀到的設定與 log 都正確，而且不再產生舊名稱的 log。
 
+### 階段 13：護衛兵道具的數值
+
+- **問題**：使用者詢問護衛兵的裝備和道具是否也會拿到最高。護衛兵武器已確認沒問題（技能數量 3、`GuardTierFix` + `MaxGuardSkillRoll`）。
+  道具的部分則需要確認，有沒有其他程式也在決定護衛兵道具的數值。
+- **查證**：用 `xref.py` 列出所有呼叫護衛兵道具資料 getter（`0x141465900`）的地方，共 21 處，大多在介面相關的程式區段。
+  其中位在武器生成函式旁邊的 `0x141518630` 有自己的 `rand()`，而且跟一般道具掉落在同一個函式（`0x141376c..`）裡被呼叫 → **場上掉落的護衛兵道具有獨立的數值函式**。
+- 讀懂邏輯（附錄 B）：它讀 `SkillItemRandRank` 全部 5 格（不限等級上限），所以資料表 `[0,0,0,0,100]` 已讓它落在級距 4；
+  但級距內的 `rand % ValueRand` 是它自己算的，`MaxSkillRoll` 管不到 → 數值仍隨機（例如朱雀翼 33～40）。
+- **修改**：新增 `MaxGuardItemRoll`，把 `cmovl ebx, eax` 換成 3 bytes 的 `nop`，讓 `ebx` 保持進入前設好的 `ValueRand − 1`。
+  特徵碼從 `mulss xmm2, xmm0` 開始取，避開前一行的 RIP 相對位址；確認在 `.text` 中唯一，並模擬寫入後反組譯確認指令邊界。
+- **驗證**：8 組特徵碼與執行檔逐一比對一致且唯一；測試程式載入正常。
+- **安裝時保留使用者設定**：遊戲裡的 ini 被使用者改過（例如 `Element=0`），所以只替換 DLL，並在 ini 最後補上新開關，不覆蓋原有內容。
+  缺少的開關在 DLL 裡預設為開啟，所以舊的 ini 也能直接使用。
+
+### 階段 14：支援 Ultimate ASI Loader
+
+- **問題**：有使用者回報其他模組也使用 `version.dll`。遊戲只會載入一個 `version.dll`，兩個模組無法同時安裝。
+- **評估過的做法**：
+  1. 在我們的 DLL 加「串接載入」：載入改名後的另一個 `version.dll`。
+  2. 改成 `.asi`，交給 Ultimate ASI Loader 載入。
+  3. 另外編譯其他檔名的代理 DLL（例如 `winmm.dll`）。
+  
+  最後採用第 2 種：UAL 本身就是 `version.dll`，會載入資料夾裡所有 `.asi`，很多模組都用它，所以能和其他模組共存。
+- **不需要另寫程式**：`.asi` 就是改了副檔名的 DLL。我們的 DLL 在 `DllMain` 啟動修改執行緒；ini 和 log 依 DLL 自己所在的資料夾決定；
+  檢查的也是遊戲執行檔的名稱，跟自己叫什麼無關。所以同一個檔案改名成 `dw3ce_re_top_tier_drop.asi` 就能直接使用。
+  `version.dll` 原本的 17 個 export 轉發，在 `.asi` 形式下用不到，但留著也不影響。
+- **只加了一行 log**：`loaded as <路徑>`，記錄 DLL 是以 `version.dll` 還是 `.asi` 被載入，方便日後排查。
+- **曾考慮但沒有採用**：加一個「同一程序只執行一份」的保護，避免使用者同時放 `version.dll` 和 `.asi`。使用者決定不加。
+  驗證後確認兩份同時存在也不會出問題：兩份寫入的 bytes 相同，第二份只是拿不到 log 檔。
+- **驗證**：寫兩支測試程式，用 `LoadLibrary` 模擬 UAL 載入：
+  - 只有 `.asi`：正確讀到旁邊的 ini，log 寫在 `.asi` 旁邊。
+  - `version.dll` 與 `.asi` 同時存在：正常結束，沒有當掉。
+- **成品**：新增 `mods\DW3CE_TopTierDrops_ASI\`，內容是同一份 mod 包、`.asi` 和 ini，不含 `version.dll`。
+  `build.bat` 編譯後會同時產出 `version.dll` 和內容相同的 `.asi`。UAL 本身不隨附，由使用者另外安裝。
+
 ---
 
 ## 走過的彎路
@@ -307,6 +344,7 @@ UHT 產生的反射參數（`FPropertyParams`）會用指標指向這些名稱�
 | 〃（同組） | `0x141537625` | `mov esi, r8d` | `mov esi, edx; nop` | 改用同步遞增的 rdx |
 | `GuardTierFix` | `0x141516bb3` | `and eax, 7FFFh; mov r14, rdi` | `push 3; pop r14; nop4` | 護衛兵武器預設級距 3 |
 | `ComboUpgradeAlways` | `0x141377ef1` | `jle 0x141377f01` | `nop`（2 bytes） | 擊倒敵人掉落的道具一律升一級，不看連擊數 |
+| `MaxGuardItemRoll` | `0x14151871b` | `cmovl ebx, eax` | `nop`（3 bytes） | 場上掉落的護衛兵道具，級距內固定取最大值 |
 
 ---
 
@@ -332,6 +370,11 @@ UHT 產生的反射參數（`FPropertyParams`）會用指標指向這些名稱�
 - `itemType` 來自關卡表 `DT_GroupLineup_*` 的 `DropItem`（`0xFF` = 不掉）。部分遊戲模式（全域狀態 9、10）跳過以下升級邏輯。
 - 道具種類 0~15（肉包、箭矢、攻擊＋、防禦＋，各 S/M/L/LL）：`尺寸 = 種類 % 4`；若尺寸 < 3 且 `GetComboCount() / 8 > 尺寸` → 種類 +1。
 - 本來不掉道具的敵人：連擊數 ≥ 16 時，隨機掉肉包（小）或箭矢（小）。（本 mod 未修改）
+
+### 場上護衛兵道具的數值函式 `0x141518630(this, stageRank)`
+- 先由 `0x141537130` 決定護衛兵道具種類（`0xA` = 不掉）。
+- 級距 = `DT_DropRandomTable[關卡等級].SkillItemRandRank` 中第一個「`rand(0~99) < 格子值`」的位置，**讀全部 5 格**，關卡等級沒有上限；找不到 = 0。
+- 數值 = `rand % ValueRand + 1 + 級距 × ValueRand`（`ValueRand` 取自 `DT_GuardEquipItemBaseData`），沒有加成倍率。
 
 ### 成長道具效果 `UGEExecCalc_GrowthItem`（計算函式 `0x141535040`）
 - 增加量（建構子 `0x14134f240` 的 Map）：ATK_UP / DEF_UP 的 S/M/L/LL 分別 +1/+2/+4/+8；MAXHP_UP、MAXSP_UP +10。
@@ -370,7 +413,8 @@ python build_mod.py --install    # 同上，並複製到遊戲的 Paks\~mods\
 - 寫出的資料會再解碼一次並與預期比對，不一致就中止。
 
 ### DLL
-需要 Visual Studio 2019 Build Tools。執行 `dll\build.bat`，產物 `dll\version.dll` 確認無誤後，再手動複製到 `mods\DW3CE_TopTierDrops\DW3CE_RE\Binaries\Win64\`。
+需要 Visual Studio 2019 Build Tools。執行 `dll\build.bat`，會產出 `dll\version.dll` 和內容相同的 `dll\dw3ce_re_top_tier_drop.asi`。
+確認無誤後，再分別手動複製到 `mods\DW3CE_TopTierDrops\DW3CE_RE\Binaries\Win64\` 和 `mods\DW3CE_TopTierDrops_ASI\DW3CE_RE\Binaries\Win64\`。
 （`vswhere.exe is not recognized` 的訊息可以忽略。）
 
 ### 遊戲更新後

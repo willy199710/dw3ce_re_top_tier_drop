@@ -67,10 +67,17 @@ static Patch g_patches[] = {
     { "ComboUpgradeAlways", "dropped item always upgraded one size, ignoring combo count", 0x1377ee6,
       {0x99,0x83,0xe2,0x07,0x03,0xc2,0xc1,0xf8,0x03,0x3b,0xc7,0x7e,0x0e,0xff,0xc3,0xeb,0x0a,0xbf,0xff,0x00},
       11, 2, {0x66,0x90} },
+    // field-dropped guard (bodyguard) skill items have their own value fn (0x141518630): it scans all 5
+    // SkillItemRandRank entries (tier 4 with our data) but still rolls rand % ValueRand inside the tier.
+    // cmovl ebx,eax -> nop keeps ebx = ValueRand-1 (top of the tier)
+    { "MaxGuardItemRoll", "field guard item value always top of tier", 0x1518711,
+      {0xf3,0x0f,0x59,0xd0,0xf3,0x0f,0x2c,0xc2,0x3b,0xc3,0x0f,0x4c,0xd8,0x0f,0xaf,0x77,0x24,0xff,0xc3,0x4c},
+      10, 3, {0x0f,0x1f,0x00} },
 };
 #define NPATCH (sizeof(g_patches)/sizeof(g_patches[0]))
 
 static WCHAR g_dir[MAX_PATH];
+static WCHAR g_self[MAX_PATH];   // full path of this module: version.dll, or the .asi when loaded by an ASI loader
 static HANDLE g_log = INVALID_HANDLE_VALUE;
 
 static void plog(const char *fmt, ...)
@@ -164,6 +171,7 @@ static DWORD WINAPI patch_thread(LPVOID unused)
         if (lstrcmpiW(name, L"DW3CE_RE-Win64-Shipping.exe")) { plog("not the game exe, doing nothing"); return 0; }
     }
     get_text(base, &text, &tsize);
+    plog("loaded as %S", g_self);
     plog("base=%p text=%p size=%lx", base, text, tsize);
     if (!apply_element_setting(path))
         for (int i = 0; i < NPATCH; i++) if (!lstrcmpA(g_patches[i].key, "Element")) g_patches[i].addr = (BYTE *)1;
@@ -214,7 +222,8 @@ BOOL WINAPI DllMain(HINSTANCE inst, DWORD reason, LPVOID reserved)
     if (reason == DLL_PROCESS_ATTACH) {
         WCHAR *slash;
         DisableThreadLibraryCalls(inst);
-        GetModuleFileNameW(inst, g_dir, MAX_PATH);
+        GetModuleFileNameW(inst, g_self, MAX_PATH);
+        lstrcpyW(g_dir, g_self);
         slash = wcsrchr(g_dir, L'\\'); if (slash) slash[1] = 0;
         CloseHandle(CreateThread(NULL, 0, patch_thread, NULL, 0, NULL));
     }
