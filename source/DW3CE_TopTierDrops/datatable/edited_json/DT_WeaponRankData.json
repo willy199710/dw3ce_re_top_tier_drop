@@ -3,17 +3,17 @@
  "Rows": {
   "WeaponRank_0": {
    "AttributeProbability": 100,
-   "RedSkillProbability": 0,
+   "RedSkillProbability": 100,
    "MaxBlueSkillNum": 6
   },
   "WeaponRank_1": {
    "AttributeProbability": 100,
-   "RedSkillProbability": 0,
+   "RedSkillProbability": 100,
    "MaxBlueSkillNum": 6
   },
   "WeaponRank_2": {
    "AttributeProbability": 100,
-   "RedSkillProbability": 10,
+   "RedSkillProbability": 100,
    "MaxBlueSkillNum": 6
   },
   "WeaponRank_3": {

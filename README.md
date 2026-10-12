@@ -19,6 +19,7 @@ Every weapon and skill item that drops on the battlefield is rolled at the **hig
 | Weapon rank | Random by stage difficulty (rank 0–2) | **Always rank 2** (the highest rank the drop table uses) |
 | Number of skills | Random 1–5, ~67% of weapons get only 1 | **Always the maximum**: 5 for normal weapons, 3 for bodyguard weapons |
 | Element | Only rank 2 has a 20% chance; element is random among Fire / Lightning / Slash / Wind | **Always present**; the element is selectable in the ini (default Slash 斬) |
+| Red skill | Only rank 2 has a 10% chance | **Always present** (takes the last skill slot, so 4 blue + 1 red) |
 | Skill values | Tier depends on stage difficulty, then a random roll inside the tier | **Always the vanilla maximum** (weapon tier 3, top of the tier, ×1.5 bonus) |
 
 ### Skill items dropped on the field
@@ -95,6 +96,19 @@ In that case, use the ASI package instead and let [Ultimate ASI Loader](https://
 
 Do not install this mod's `version.dll` together with the `.asi`; one of them is enough.
 
+### Variant: vanilla weapon drop rank (`DW3CE_VanillaWeaponDrops`)
+For players who want weapon ranks to follow stage difficulty like vanilla, while keeping every other top-tier change.
+It only contains an alternative data pak with the **same file names**, so it replaces the normal pak instead of being added next to it:
+
+| | Normal (`DW3CE_TopTierDrops`) | Variant (`DW3CE_VanillaWeaponDrops`) |
+|---|---|---|
+| Weapon rank | Always rank 2 | Vanilla: random by stage difficulty (rank 0–2) |
+| Element, red skill, number of skills, skill values, field items, enemy drops | Top tier | Same as normal |
+
+1. Install the normal package first (the DLL / `.asi` and `dw3ce_re_top_tier_drop.ini` are still required).
+2. Copy the `DW3CE_RE` folder inside **`mods/DW3CE_VanillaWeaponDrops/`** into the game's root folder and let it **overwrite** the 3 `zDW3TopDrops_P.*` files in `DW3CE_RE/Content/Paks/~mods/`.
+3. To switch back, copy the 3 pak files from `mods/DW3CE_TopTierDrops/` again.
+
 ## Uninstall
 
 Delete the 5 files above (and `dw3ce_re_top_tier_drop.log` if present). With the ASI package, delete `dw3ce_re_top_tier_drop.asi` instead of `version.dll`.
@@ -141,7 +155,9 @@ Three cooked DataTables are re-encoded and packed as an IoStore patch container 
 |---|---|
 | `DT_DropRandomTable` | `WeaponRandRank` → rank 2; `SkillItemRandRank` → `[0,0,0,0,100]`; `CorrectionRate` → 100; `CorrectionRatio` → 150 |
 | `DT_SkillNumRandomTable` | `SkillRandBase` → `[100,100,100,100,100]` (index 0 = most skills) |
-| `DT_WeaponRankData` | `AttributeProbability` → 100 for ranks 0–2 |
+| `DT_WeaponRankData` | `AttributeProbability` → 100 and `RedSkillProbability` → 100 for ranks 0–2 |
+
+The vanilla-weapon-rank variant leaves `WeaponRandRank` untouched; every other change is the same as the main build.
 
 ### Proxy DLL
 The game imports `version.dll`, which is not in Windows' KnownDLLs, so a `version.dll` placed next to the executable is loaded first.
@@ -179,12 +195,15 @@ and how each finding was verified — is in [`source/DW3CE_TopTierDrops/README.m
 ├─ README.md / README.zh-TW.md
 ├─ mods/
 │  ├─ DW3CE_TopTierDrops/        Release files, laid out like the game folder
-│  └─ DW3CE_TopTierDrops_ASI/    Same, with the DLL as an .asi plugin for Ultimate ASI Loader
+│  ├─ DW3CE_TopTierDrops_ASI/    Same, with the DLL as an .asi plugin for Ultimate ASI Loader
+│  └─ DW3CE_VanillaWeaponDrops/  Alternative data pak only: vanilla weapon drop rank
 ├─ source/
-│  └─ DW3CE_TopTierDrops/
-│     ├─ datatable/              build_mod.py + edited JSON of the three tables
-│     ├─ dll/                    dw3ce_re_top_tier_drop.c + build.bat
-│     └─ README.md               Development log (zh-TW)
+│  ├─ DW3CE_TopTierDrops/
+│  │  ├─ datatable/              build_mod.py + edited JSON of the three tables
+│  │  ├─ dll/                    dw3ce_re_top_tier_drop.c + build.bat
+│  │  └─ README.md               Development log (zh-TW)
+│  └─ DW3CE_VanillaWeaponDrops/
+│     └─ datatable/edited_json/  Edited JSON of the variant (written by build_mod.py --vanilla-weapons --package)
 └─ tools/
    ├─ DataTableTools/            usmap-free DataTable tooling (see below)
    ├─ retoc/                     Third-party IoStore tool (MIT)
@@ -213,6 +232,7 @@ Requirements: Windows, Python 3.10+ (`numpy` and `capstone` only needed for `xre
    python build_mod.py              # build to ./build/out
    python build_mod.py --package    # also refresh mods/DW3CE_TopTierDrops
    python build_mod.py --install    # also copy into the game's Paks/~mods
+   python build_mod.py --vanilla-weapons --package   # variant: build to ./build/out_vanilla_weapons, refresh mods/DW3CE_VanillaWeaponDrops
    ```
    The game path defaults to `G:\SteamLibrary\steamapps\common\DW3CE_RE`; override it with the `DW3CE_GAME_DIR` environment variable.
    Builds are deterministic (`retoc --no-parallel`), and every written table is decoded again and compared before packing.
@@ -224,8 +244,11 @@ Requirements: Windows, Python 3.10+ (`numpy` and `capstone` only needed for `xre
 | File | SHA-256 |
 |---|---|
 | `zDW3TopDrops_P.pak` | `75e7144577253917f6da7312ef5e585b12fb728226a22b0938323751a6b555cd` |
-| `zDW3TopDrops_P.utoc` | `a78a6f7e50afaf6983a3db5b441ef9afbb19e0060d51d92846b9b6d2388404d2` |
-| `zDW3TopDrops_P.ucas` | `b2f2967c3fc01102108ab3ce035bbf41c7f9a817f7f7ec7074e8e6938bfc15f7` |
+| `zDW3TopDrops_P.utoc` | `36c42c3e499f09b74cc479ec265488e308df8a8903f3549226b30296aa502ab1` |
+| `zDW3TopDrops_P.ucas` | `bce3a11576852ef75c02ae12d47878e7b0cfc158225e3d345137e5344b23ff82` |
+| `zDW3TopDrops_P.pak` (vanilla-weapon-rank variant) | `75e7144577253917f6da7312ef5e585b12fb728226a22b0938323751a6b555cd` (same as normal) |
+| `zDW3TopDrops_P.utoc` (vanilla-weapon-rank variant) | `6556fc950d304fa5e9ec9ce562c4b9c0b9e8d8b38167cf0a74ffd059e0d5c8c5` |
+| `zDW3TopDrops_P.ucas` (vanilla-weapon-rank variant) | `718b2a8685f1babe07422e4ee132a61c039ff04db0989980a7c4fc0511229010` |
 | `version.dll` | `f2bc13d72ab2fbf76566d459ea079c3cff116a6f54f24a3e9c968995bd486e94` |
 | `dw3ce_re_top_tier_drop.asi` (ASI package) | `f2bc13d72ab2fbf76566d459ea079c3cff116a6f54f24a3e9c968995bd486e94` (same file) |
 | Target `DW3CE_RE-Win64-Shipping.exe` 1.0.2.0 | `ca1a65a53242a7cf42493bd2006b8c555d87597387468e4b7a07c52d4eefe92e` |

@@ -17,6 +17,7 @@
 | 武器等級 | 依關卡難度隨機（等級 0~2） | **固定為最高的等級 2** |
 | 技能數量 | 隨機 1~5 個，約 67% 只有 1 個 | **固定為上限**：一般武器 5 個、護衛兵武器 3 個 |
 | 屬性 | 只有等級 2 有 20% 機率帶屬性，種類在炎／雷／斬／風中隨機 | **每把都有**，種類可在 ini 指定（預設「斬」） |
+| 紅技能 | 只有等級 2 有 10% 機率 | **每把都有**（佔用最後一格技能，所以是 4 藍 + 1 紅） |
 | 技能數值 | 依關卡難度落在不同級距，級距內再隨機 | **固定為原版上限**（武器最高級距 3、級距內最大值、再 ×1.5 加成） |
 
 ### 戰場上掉落的技能道具
@@ -86,6 +87,19 @@ mods\DW3CE_TopTierDrops\DW3CE_RE   →   ...\steamapps\common\DW3CE_RE\DW3CE_RE
 
 不要把本模組的 `version.dll` 和 `.asi` 同時安裝，擇一即可。
 
+### 變體版：武器掉落等級維持原版（`DW3CE_VanillaWeaponDrops`）
+適合想讓武器等級像原版一樣依關卡難度變化，但其他項目仍維持最高品質的玩家。
+變體版只有一份替換用的 mod 包，**檔名和一般版相同**，所以是取代一般版的 mod 包，不是額外新增：
+
+| 項目 | 一般版（`DW3CE_TopTierDrops`） | 變體版（`DW3CE_VanillaWeaponDrops`） |
+|---|---|---|
+| 武器等級 | 固定為等級 2 | 原版：依關卡難度隨機（等級 0~2） |
+| 屬性、紅技能、技能數量、技能數值、場上道具、敵人掉落道具 | 最高品質 | 與一般版相同 |
+
+1. 先安裝一般版（`version.dll` 或 `.asi`，以及 `dw3ce_re_top_tier_drop.ini` 仍然必要）。
+2. 把 **`mods\DW3CE_VanillaWeaponDrops\`** 裡的 `DW3CE_RE` 資料夾複製到遊戲根目錄，**覆蓋** `DW3CE_RE\Content\Paks\~mods\` 裡的 3 個 `zDW3TopDrops_P.*` 檔案。
+3. 要換回一般版，再把 `mods\DW3CE_TopTierDrops\` 裡的 3 個 mod 包檔案複製回去即可。
+
 ## 移除
 
 刪除上表的 5 個檔案（以及執行後產生的 `dw3ce_re_top_tier_drop.log`）即可。使用 ASI 版的話，刪的是 `dw3ce_re_top_tier_drop.asi` 而不是 `version.dll`。
@@ -131,9 +145,11 @@ dw3ce_re_top_tier_drop\
 ├─ README.zh-TW.md           本檔：mod 功能與使用說明
 ├─ mods\
 │  ├─ DW3CE_TopTierDrops\        成品（照遊戲目錄結構擺放）
-│  └─ DW3CE_TopTierDrops_ASI\    同上，但 DLL 改為給 Ultimate ASI Loader 載入的 .asi
+│  ├─ DW3CE_TopTierDrops_ASI\    同上，但 DLL 改為給 Ultimate ASI Loader 載入的 .asi
+│  └─ DW3CE_VanillaWeaponDrops\  變體版：只有替換用的 mod 包（武器掉落等級維持原版）
 ├─ source\
-│  └─ DW3CE_TopTierDrops\        原始碼、建置腳本、修改紀錄、開發歷程與驗證過程
+│  ├─ DW3CE_TopTierDrops\        原始碼、建置腳本、修改紀錄、開發歷程與驗證過程
+│  └─ DW3CE_VanillaWeaponDrops\  變體版的修改紀錄（edited_json，由 build_mod.py --vanilla-weapons --package 產生）
 └─ tools\                    開發用工具（DataTable 解析工具、retoc、原版資料匯出）
 ```
 
@@ -142,8 +158,11 @@ dw3ce_re_top_tier_drop\
 | 檔案 | SHA-256 |
 |---|---|
 | `zDW3TopDrops_P.pak` | `75e7144577253917f6da7312ef5e585b12fb728226a22b0938323751a6b555cd` |
-| `zDW3TopDrops_P.utoc` | `a78a6f7e50afaf6983a3db5b441ef9afbb19e0060d51d92846b9b6d2388404d2` |
-| `zDW3TopDrops_P.ucas` | `b2f2967c3fc01102108ab3ce035bbf41c7f9a817f7f7ec7074e8e6938bfc15f7` |
+| `zDW3TopDrops_P.utoc` | `36c42c3e499f09b74cc479ec265488e308df8a8903f3549226b30296aa502ab1` |
+| `zDW3TopDrops_P.ucas` | `bce3a11576852ef75c02ae12d47878e7b0cfc158225e3d345137e5344b23ff82` |
+| `zDW3TopDrops_P.pak`（變體版） | `75e7144577253917f6da7312ef5e585b12fb728226a22b0938323751a6b555cd`（與一般版相同） |
+| `zDW3TopDrops_P.utoc`（變體版） | `6556fc950d304fa5e9ec9ce562c4b9c0b9e8d8b38167cf0a74ffd059e0d5c8c5` |
+| `zDW3TopDrops_P.ucas`（變體版） | `718b2a8685f1babe07422e4ee132a61c039ff04db0989980a7c4fc0511229010` |
 | `version.dll` | `f2bc13d72ab2fbf76566d459ea079c3cff116a6f54f24a3e9c968995bd486e94` |
 | `dw3ce_re_top_tier_drop.asi`（ASI 版） | `f2bc13d72ab2fbf76566d459ea079c3cff116a6f54f24a3e9c968995bd486e94`（與 version.dll 相同） |
 | 對應的遊戲執行檔 `DW3CE_RE-Win64-Shipping.exe` 1.0.2.0 | `ca1a65a53242a7cf42493bd2006b8c555d87597387468e4b7a07c52d4eefe92e` |

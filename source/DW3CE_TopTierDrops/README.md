@@ -330,6 +330,7 @@ UHT 產生的反射參數（`FPropertyParams`）會用指標指向這些名稱�
 | `DT_SkillNumRandomTable` | `SkillRandBase`（一般） | `[1,3,13,33,100]` | `[100,100,100,100,100]` |
 | 〃 | `SkillRandBase`（護衛兵） | `[2,12,32,38,0]` | `[100,100,100,100,100]` |
 | `DT_WeaponRankData` | `AttributeProbability`（等級 0~2） | 0 / 0 / 20 | 100 |
+| 〃 | `RedSkillProbability`（等級 0~2） | 0 / 0 / 10 | 100 |
 
 修改後的完整內容在 `datatable\edited_json\`。
 

@@ -1,0 +1,293 @@
+{
+ "RowStruct": "DropRandomTable_TableRow",
+ "Rows": {
+  "StageRank_00": {
+   "WeaponRandRank": [
+    100,
+    0,
+    0,
+    0,
+    0
+   ],
+   "SkillItemRandRank": [
+    0,
+    0,
+    0,
+    0,
+    100
+   ],
+   "CorrectionRate": 100,
+   "CorrectionRatio": 150
+  },
+  "StageRank_01": {
+   "WeaponRandRank": [
+    90,
+    100,
+    0,
+    0,
+    0
+   ],
+   "SkillItemRandRank": [
+    0,
+    0,
+    0,
+    0,
+    100
+   ],
+   "CorrectionRate": 100,
+   "CorrectionRatio": 150
+  },
+  "StageRank_02": {
+   "WeaponRandRank": [
+    70,
+    100,
+    0,
+    0,
+    0
+   ],
+   "SkillItemRandRank": [
+    0,
+    0,
+    0,
+    0,
+    100
+   ],
+   "CorrectionRate": 100,
+   "CorrectionRatio": 150
+  },
+  "StageRank_03": {
+   "WeaponRandRank": [
+    50,
+    100,
+    0,
+    0,
+    0
+   ],
+   "SkillItemRandRank": [
+    0,
+    0,
+    0,
+    0,
+    100
+   ],
+   "CorrectionRate": 100,
+   "CorrectionRatio": 150
+  },
+  "StageRank_04": {
+   "WeaponRandRank": [
+    30,
+    100,
+    0,
+    0,
+    0
+   ],
+   "SkillItemRandRank": [
+    0,
+    0,
+    0,
+    0,
+    100
+   ],
+   "CorrectionRate": 100,
+   "CorrectionRatio": 150
+  },
+  "StageRank_05": {
+   "WeaponRandRank": [
+    0,
+    60,
+    100,
+    0,
+    0
+   ],
+   "SkillItemRandRank": [
+    0,
+    0,
+    0,
+    0,
+    100
+   ],
+   "CorrectionRate": 100,
+   "CorrectionRatio": 150
+  },
+  "StageRank_06": {
+   "WeaponRandRank": [
+    0,
+    45,
+    100,
+    0,
+    0
+   ],
+   "SkillItemRandRank": [
+    0,
+    0,
+    0,
+    0,
+    100
+   ],
+   "CorrectionRate": 100,
+   "CorrectionRatio": 150
+  },
+  "StageRank_07": {
+   "WeaponRandRank": [
+    0,
+    30,
+    100,
+    0,
+    0
+   ],
+   "SkillItemRandRank": [
+    0,
+    0,
+    0,
+    0,
+    100
+   ],
+   "CorrectionRate": 100,
+   "CorrectionRatio": 150
+  },
+  "StageRank_08": {
+   "WeaponRandRank": [
+    0,
+    15,
+    100,
+    0,
+    0
+   ],
+   "SkillItemRandRank": [
+    0,
+    0,
+    0,
+    0,
+    100
+   ],
+   "CorrectionRate": 100,
+   "CorrectionRatio": 150
+  },
+  "StageRank_09": {
+   "WeaponRandRank": [
+    0,
+    10,
+    100,
+    0,
+    0
+   ],
+   "SkillItemRandRank": [
+    0,
+    0,
+    0,
+    0,
+    100
+   ],
+   "CorrectionRate": 100,
+   "CorrectionRatio": 150
+  },
+  "StageRank_10": {
+   "WeaponRandRank": [
+    0,
+    5,
+    100,
+    0,
+    0
+   ],
+   "SkillItemRandRank": [
+    0,
+    0,
+    0,
+    0,
+    100
+   ],
+   "CorrectionRate": 100,
+   "CorrectionRatio": 150
+  },
+  "StageRank_11": {
+   "WeaponRandRank": [
+    0,
+    0,
+    100,
+    0,
+    0
+   ],
+   "SkillItemRandRank": [
+    0,
+    0,
+    0,
+    0,
+    100
+   ],
+   "CorrectionRate": 100,
+   "CorrectionRatio": 150
+  },
+  "StageRank_12": {
+   "WeaponRandRank": [
+    0,
+    0,
+    100,
+    0,
+    0
+   ],
+   "SkillItemRandRank": [
+    0,
+    0,
+    0,
+    0,
+    100
+   ],
+   "CorrectionRate": 100,
+   "CorrectionRatio": 150
+  },
+  "StageRank_13": {
+   "WeaponRandRank": [
+    0,
+    0,
+    100,
+    0,
+    0
+   ],
+   "SkillItemRandRank": [
+    0,
+    0,
+    0,
+    0,
+    100
+   ],
+   "CorrectionRate": 100,
+   "CorrectionRatio": 150
+  },
+  "StageRank_14": {
+   "WeaponRandRank": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "SkillItemRandRank": [
+    0,
+    0,
+    0,
+    0,
+    100
+   ],
+   "CorrectionRate": 100,
+   "CorrectionRatio": 150
+  },
+  "StageRank_15": {
+   "WeaponRandRank": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "SkillItemRandRank": [
+    0,
+    0,
+    0,
+    0,
+    100
+   ],
+   "CorrectionRate": 100,
+   "CorrectionRatio": 150
+  }
+ }
+}

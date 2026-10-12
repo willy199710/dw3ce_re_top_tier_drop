@@ -1,0 +1,30 @@
+{
+ "RowStruct": "WeaponRankData_TableRow",
+ "Rows": {
+  "WeaponRank_0": {
+   "AttributeProbability": 100,
+   "RedSkillProbability": 100,
+   "MaxBlueSkillNum": 6
+  },
+  "WeaponRank_1": {
+   "AttributeProbability": 100,
+   "RedSkillProbability": 100,
+   "MaxBlueSkillNum": 6
+  },
+  "WeaponRank_2": {
+   "AttributeProbability": 100,
+   "RedSkillProbability": 100,
+   "MaxBlueSkillNum": 6
+  },
+  "WeaponRank_3": {
+   "AttributeProbability": 0,
+   "RedSkillProbability": 0,
+   "MaxBlueSkillNum": 7
+  },
+  "WeaponRank_4": {
+   "AttributeProbability": 0,
+   "RedSkillProbability": 0,
+   "MaxBlueSkillNum": 8
+  }
+ }
+}
